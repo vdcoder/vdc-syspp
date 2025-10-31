@@ -32,7 +32,7 @@ COPY . .
 
 # Build the WebAssembly client
 WORKDIR /app/src/client
-RUN /bin/bash -c "source /emsdk/emsdk_env.sh && ./build.sh"
+RUN chmod +x build.sh && /bin/bash -c "source /emsdk/emsdk_env.sh && ./build.sh"
 
 # Copy client output to static directory
 WORKDIR /app

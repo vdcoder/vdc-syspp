@@ -1,5 +1,7 @@
 # Build artifacts
 build/
+src/client/output/
+static/
 *.o
 *.a
 *.so
@@ -24,3 +26,7 @@ Thumbs.db
 
 # Temp files
 *.tmp
+*.log
+nohup.out
+*.backup
+server.log

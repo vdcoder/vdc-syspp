@@ -1,5 +1,23 @@
+# Build directories
 build/
+src/client/output/
+static/
+
+# Git
 .git/
-.vscode/
-*.md
 .gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Documentation
+*.md
+!README.md
+
+# Logs
+*.log
+nohup.out
+
+# Backup files
+*.backup
