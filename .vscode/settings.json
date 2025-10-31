@@ -1,0 +1,18 @@
+{
+  "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "C_Cpp.default.compilerPath": "/usr/bin/g++",
+  "C_Cpp.default.cStandard": "c17",
+  "C_Cpp.default.cppStandard": "c++17",
+  "C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/metal/src",
+    "/usr/local/include/oatpp-1.3.0/oatpp"
+  ],
+  "files.associations": {
+    "*.hpp": "cpp",
+    "*.cpp": "cpp"
+  },
+  "cmake.sourceDirectory": "${workspaceFolder}/metal",
+  "cmake.buildDirectory": "${workspaceFolder}/metal/build",
+  "terminal.integrated.defaultProfile.windows": "PowerShell"
+}

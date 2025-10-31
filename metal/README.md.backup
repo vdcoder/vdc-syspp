@@ -1,0 +1,118 @@
+# Metal Server
+
+A fast and lean C++ HTTP server built with oatpp framework.
+
+## Features
+
+- ⚡ Fast and lightweight using oatpp
+- 🐳 Docker support for easy deployment
+- 🚂 Railway-ready with automatic port configuration
+- 🔧 CMake build system
+- 🌐 RESTful API endpoints
+
+## Prerequisites
+
+### For WSL2/Linux Development
+```bash
+# Install build tools
+sudo apt-get update
+sudo apt-get install -y build-essential cmake git
+
+# Install oatpp
+cd /tmp
+git clone --depth=1 --branch 1.3.0 https://github.com/oatpp/oatpp.git
+cd oatpp
+mkdir build && cd build
+cmake ..
+sudo make install
+```
+
+## Building
+
+### Using CMake (WSL2/Linux)
+```bash
+cd metal
+mkdir build && cd build
+cmake ..
+cmake --build .
+```
+
+### Using Docker
+```bash
+cd metal
+docker build -t metal-server .
+docker run -p 8080:8080 metal-server
+```
+
+## Running
+
+### Local Development
+```bash
+# From build directory
+./MetalServer
+
+# Or with custom port
+PORT=3000 ./MetalServer
+```
+
+### Docker
+```bash
+docker run -p 8080:8080 metal-server
+```
+
+## API Endpoints
+
+- `GET /` - Welcome message
+- `GET /health` - Health check endpoint
+- `GET /api/hello?name=<name>` - Greeting endpoint
+
+## Deploying to Railway
+
+1. Install Railway CLI or use the web interface
+2. Create a new project on Railway
+3. Connect your GitHub repository
+4. Railway will automatically detect the Dockerfile and deploy
+5. The server will bind to Railway's provided PORT environment variable
+
+### Using Railway CLI
+```bash
+# Install Railway CLI
+npm install -g @railway/cli
+
+# Login
+railway login
+
+# Initialize and deploy
+railway init
+railway up
+```
+
+## Development in VS Code with WSL2
+
+1. Install "Remote - WSL" extension in VS Code
+2. Open WSL2 terminal in VS Code (Ctrl+`)
+3. Navigate to the project: `cd /mnt/c/Users/vdcod/OneDrive/Desktop/OneDrive/vdcoder.com/vdc-syspp/metal`
+4. Open in VS Code: `code .`
+5. Build and run as described above
+
+## Project Structure
+
+```
+metal/
+├── src/
+│   ├── main.cpp              # Application entry point
+│   ├── AppComponent.hpp      # Dependency injection configuration
+│   └── controller/
+│       └── ApiController.hpp # API endpoint definitions
+├── CMakeLists.txt            # Build configuration
+├── Dockerfile                # Container configuration
+└── README.md                 # This file
+```
+
+## Next Steps
+
+- Add more endpoints in `ApiController.hpp`
+- Implement business logic
+- Add database integration
+- Set up authentication/authorization
+- Configure CORS for web clients

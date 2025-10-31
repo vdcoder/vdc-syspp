@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Metal Server",
+      "type": "shell",
+      "command": "cd /mnt/c/Users/vdcod/OneDrive/Desktop/OneDrive/vdcoder.com/vdc-syspp/metal/build && cmake -DCMAKE_BUILD_TYPE=Debug .. && cmake --build .",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"],
+      "detail": "Build Metal Server in Debug mode with GDB symbols"
+    },
+    {
+      "label": "Build Metal Server (Release)",
+      "type": "shell",
+      "command": "cd /mnt/c/Users/vdcod/OneDrive/Desktop/OneDrive/vdcoder.com/vdc-syspp/metal/build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build .",
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "detail": "Build Metal Server in Release mode (optimized)"
+    },
+    {
+      "label": "Clean Build",
+      "type": "shell",
+      "command": "cd /mnt/c/Users/vdcod/OneDrive/Desktop/OneDrive/vdcoder.com/vdc-syspp/metal && rm -rf build && mkdir build",
+      "problemMatcher": [],
+      "detail": "Clean the build directory"
+    },
+    {
+      "label": "Run Metal Server",
+      "type": "shell",
+      "command": "cd /mnt/c/Users/vdcod/OneDrive/Desktop/OneDrive/vdcoder.com/vdc-syspp/metal/build && ./MetalServer",
+      "problemMatcher": [],
+      "detail": "Run Metal Server without debugging",
+      "isBackground": true
+    }
+  ]
+}
