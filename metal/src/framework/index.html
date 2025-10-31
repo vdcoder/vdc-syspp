@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ Framework Demo - Naked Version</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .header {
+      background: white;
+      padding: 20px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .stats {
+      background: rgba(255,255,255,0.1);
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      margin-top: 10px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    #app-root {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      min-width: 400px;
+      min-height: 200px;
+    }
+
+    #loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      color: #999;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    input {
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      margin: 5px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .performance-monitor {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.8);
+      color: #0f0;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      min-width: 200px;
+    }
+
+    .performance-monitor .metric {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+
+    .performance-monitor .label {
+      color: #0ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🚀 C++ Framework - Naked Version</h1>
+    <p>String-based rendering with rAF scheduling</p>
+    <div class="stats">
+      <span>⚡ Approach: Regenerate every frame</span>
+      <span>🎯 Scheduler: requestAnimationFrame</span>
+      <span>🔄 Diff: String comparison</span>
+      <span>✨ Patch: innerHTML</span>
+    </div>
+  </div>
+
+  <div id="app-root">
+    <div id="loading">Loading WebAssembly...</div>
+  </div>
+
+  <div class="performance-monitor" id="perf-monitor">
+    <div class="metric">
+      <span class="label">FPS:</span>
+      <span id="fps">0</span>
+    </div>
+    <div class="metric">
+      <span class="label">Memory:</span>
+      <span id="memory">N/A</span>
+    </div>
+  </div>
+
+  <script>
+    // Performance monitoring
+    let lastTime = performance.now();
+    let frameCount = 0;
+
+    function updatePerformanceMonitor() {
+      frameCount++;
+      const now = performance.now();
+      const elapsed = now - lastTime;
+
+      if (elapsed >= 1000) {
+        const fps = Math.round((frameCount * 1000) / elapsed);
+        document.getElementById('fps').textContent = fps;
+        frameCount = 0;
+        lastTime = now;
+
+        // Update memory if available
+        if (performance.memory) {
+          const usedMB = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
+          document.getElementById('memory').textContent = usedMB + ' MB';
+        }
+      }
+      requestAnimationFrame(updatePerformanceMonitor);
+    }
+    updatePerformanceMonitor();
+  </script>
+
+  <script src="framework.js"></script>
+  <script>
+    // Load and initialize WebAssembly module
+    var ModuleOptions = {
+      onRuntimeInitialized: function() {
+        console.log('🎉 WebAssembly loaded!');
+        console.log('🚀 Starting framework...');
+        
+        // 'this' refers to the actual Module instance
+        this.startApp();
+        
+        console.log('✅ Framework running!');
+      },
+      print: function(text) {
+        console.log('📝 WASM:', text);
+      },
+      printErr: function(text) {
+        console.error('❌ WASM Error:', text);
+      }
+    };
+
+    // Initialize the module (required for MODULARIZE=1)
+    Module(ModuleOptions).then(function(instance) {
+      FrameworkModule = instance;
+      console.log('✅ FrameworkModule ready globally');
+    });
+  </script>
+</body>
+</html>
