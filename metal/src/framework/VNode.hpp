@@ -240,27 +240,3 @@ inline VNode br() {
 inline VNode hr(std::map<std::string, std::string> props = {}) {
     return VNode(Tag::HR, std::move(props), {});
 }
-
-// ============================================================================
-// Event Callback Helpers - Create event handler strings
-// ============================================================================
-
-// Generic callback with no event data
-inline std::string Func(int eventId) {
-    return "invokeCallback(" + std::to_string(eventId) + ")";
-}
-
-// Future: Mouse event callback (placeholder for future implementation)
-// inline std::string FuncMouseEvent(int eventId) {
-//     return "invokeCallbackMouseEvent(" + std::to_string(eventId) + ")";
-// }
-
-// Future: Keyboard event callback (placeholder for future implementation)
-// inline std::string FuncKeyboardEvent(int eventId) {
-//     return "invokeCallbackKeyboardEvent(" + std::to_string(eventId) + ")";
-// }
-
-// Future: Input event callback (placeholder for future implementation)
-// inline std::string FuncInputEvent(int eventId) {
-//     return "invokeCallbackInputEvent(" + std::to_string(eventId) + ")";
-// }
