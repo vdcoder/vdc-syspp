@@ -10,7 +10,9 @@
   ],
   "files.associations": {
     "*.hpp": "cpp",
-    "*.cpp": "cpp"
+    "*.cpp": "cpp",
+    "sstream": "cpp",
+    "regex": "cpp"
   },
   "cmake.sourceDirectory": "${workspaceFolder}/metal",
   "cmake.buildDirectory": "${workspaceFolder}/metal/build",

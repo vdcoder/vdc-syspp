@@ -6,7 +6,11 @@
 #include <functional>
 #include <unordered_map>
 #include <memory>
-#include "JString.hpp"
+#include <optional>
+#include "String.hpp"
+#include "VNode.hpp"
+#include "Diff.hpp"
+#include "Patch.hpp"
 
 using namespace emscripten;
 
@@ -53,7 +57,7 @@ private:
 public:
     ComponentBase(IInvalidator* invalidator) : invalidator(invalidator) {}
     
-    virtual std::string render() = 0;
+    virtual VNode render() = 0;
     
     void invalidate() {
         invalidator->invalidate();
@@ -74,7 +78,8 @@ public:
 class Renderer: public IInvalidator {
 private:
   AppBase* app = nullptr;
-  std::string oldHTML = "";
+  std::optional<VNode> oldVNode;
+  EM_VAL rootElement = 0;
   bool hasPatches = false;
   bool frameRequested = false;
 
@@ -92,33 +97,45 @@ private:
   }
 
   void applyPatches() {
-    // Generate new HTML
-    std::string newHTML = app->render();
+    // Generate new VNode tree
+    VNode newVNode = app->render();
 
-    // Simple diff: compare strings
-    if (newHTML != oldHTML) {
-      // Apply to DOM
+    if (!oldVNode) {
+      // First render - create initial DOM
       val document = val::global("document");
       val root = document.call<val>("getElementById", val("app-root"));
       
       if (!root.isNull() && !root.isUndefined()) {
-        root.set("innerHTML", newHTML);
+        // Clear existing content
+        root.set("innerHTML", val(""));
         
-        // Reattach event listeners after innerHTML update
+        // Render new VNode tree
+        rootElement = renderVNode(newVNode);
+        
+        // Append to root
+        EM_VAL rootHandle = root.as_handle();
+        dom_appendChild(rootHandle, rootElement);
+        
+        // Setup event listeners
         setupEventListeners();
       }
-
-      oldHTML = newHTML;
+    } else {
+      // Subsequent renders - diff and patch
+      DiffNode diff = diffNodes(*oldVNode, newVNode);
+      
+      if (diff.hasChanges()) {
+        patch(rootElement, diff);
+      }
     }
+
+    // Store new VNode for next diff
+    oldVNode = std::move(newVNode);
   }
 
   void setupEventListeners() {
-    // Note: With the new system, we don't need to manually attach listeners
-    // The onclick attributes in HTML contain data-event-id that we set up
-    // We just need to ensure the global handler is set up
+    // Set up one-time global event handler
     val window = val::global("window");
     if (window["__eventHandlerSetup"].isUndefined()) {
-      // Set up one-time global event handler
       window.set("__eventHandlerSetup", true);
       window.set("invokeCallback", val::module_property("invokeCallback"));
     }
@@ -147,11 +164,10 @@ class MyComponent : public ComponentBase {
 public:
   MyComponent(IInvalidator* invalidator) : ComponentBase(invalidator) {}
 
-  virtual std::string render() {
-    return 
-      "<div style='font-family: sans-serif; padding: 20px;'>"
-        "<h1>MyComponent</h1>"
-      "</div>";
+  virtual VNode render() {
+    return div({{"style", "font-family: sans-serif; padding: 20px;"}}, {
+      h1({}, {text("MyComponent")})
+    });
   }
 };
 
@@ -159,7 +175,7 @@ class App : public AppBase {
 private:
   // Simple state
   int counter = 0;
-  JString message{"Hello from C++ with JString!"};  // Using JString!
+  String message{"Hello from C++ with String!"};
   
   // Event handler IDs (integers now!)
   int incrementEventId;
@@ -170,6 +186,17 @@ public:
   App(IInvalidator* invalidator) : AppBase(invalidator) {
     // Register event handlers with lambdas
     incrementEventId = registerCallback([this]() {
+
+      std::string stdall;
+
+      for (int i = 0; i < 1000000; ++i) {
+        String s(("Test" + std::to_string(i)).c_str()); // Loop creates and destroys strings
+        std::string stds = s.std_str();
+        std::string stds1 = s.std_str();
+        int l = s.length();
+        stdall += stds + stds1 + std::to_string(l);
+      }
+
       counter++;
       invalidate();
     });
@@ -183,7 +210,7 @@ public:
       val document = val::global("document");
       val input = document.call<val>("getElementById", val("message-input"));
       if (!input.isNull()) {
-        message = JString(input["value"].as<std::string>());
+        message = String(input["value"]);
         invalidate();
       }
     });
@@ -191,18 +218,17 @@ public:
 
   virtual void start() {}
 
-  // Render returns HTML string
-  virtual std::string render() {
-    return 
-      "<div style='font-family: sans-serif; padding: 20px;'>"
-        "<h1>" + message.toStdString() + "</h1>"
-        "<p>Counter: " + std::to_string(counter) + "</p>"
-        "<button onclick='invokeCallback(" + std::to_string(incrementEventId) + ")'>Increment</button>"
-        "<button onclick='invokeCallback(" + std::to_string(resetEventId) + ")'>Reset</button>"
-        "<input id='message-input' type='text' placeholder='Enter message' />"
-        "<button onclick='invokeCallback(" + std::to_string(updateMessageEventId) + ")'>Update Message</button>" 
-        + MyComponent(this).render() +
-      "</div>";
+  // Render returns VNode tree
+  virtual VNode render() {
+    return div({{"style", "font-family: sans-serif; padding: 20px;"}}, {
+      h1({}, {text(message.std_str())}),
+      p({}, {text("Counter: " + std::to_string(counter))}),
+      button({{"onclick", Func(incrementEventId)}}, {text("Increment")}),
+      button({{"onclick", Func(resetEventId)}}, {text("Reset")}),
+      input({{"id", "message-input"}, {"type", "text"}, {"placeholder", "Enter message"}}),
+      button({{"onclick", Func(updateMessageEventId)}}, {text("Update Message")}),
+      MyComponent(this).render()
+    });
   }
 };
 
